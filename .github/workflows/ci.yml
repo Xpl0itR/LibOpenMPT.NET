@@ -1,0 +1,82 @@
+name: Check upstream & Build
+
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: '0 0 * * *'
+
+jobs:
+  check-upstream:
+    runs-on: ubuntu-latest
+    outputs:
+      version: ${{ steps.check_upstream.outputs.version }}
+      commit:  ${{ steps.check_upstream.outputs.commit  }}
+    steps:
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+
+      - name: Install dependencies
+        run:  npm install semver
+
+      - name: Check for upstream updates
+        id:   check_upstream
+        uses: actions/github-script@v7
+        with:
+          github-token: ${{ secrets.PAT_Variable_ReadWrite }}
+          script: |
+            const semverCompare = require("semver/functions/compare");
+
+            let { data: tags } = await github.rest.repos.listTags({ owner: "OpenMPT", repo: "openmpt" });
+            let latestTag = tags.filter(tag => tag.name.startsWith("libopenmpt-"))
+                                .map(tag => ({ version: tag.name.substring(11), commit: tag.commit.sha }))
+                                .sort((a, b) => semverCompare(b.version, a.version))
+                                [0];
+
+            if (semverCompare(latestTag.version, "${{ vars.CURRENT_UPSTREAM_VERSION }}") <= 0)
+                return;
+
+            core.setOutput("version", latestTag.version);
+            core.setOutput("commit",  latestTag.commit);
+
+            await github.rest.actions.updateRepoVariable({
+                owner: context.payload.repository.owner.login,
+                repo:  context.payload.repository.name,
+                name:  "CURRENT_UPSTREAM_VERSION",
+                value: latestTag.version
+            });
+
+  build:
+    needs: check-upstream
+    if: needs.check-upstream.outputs.commit != ''
+    runs-on: windows-latest
+    steps:
+      - name: Git checkout
+        uses: actions/checkout@v4
+
+      - name: Git checkout upstream
+        uses: actions/checkout@v4
+        with:
+          repository: 'OpenMPT/openmpt'
+          ref: '${{ needs.check-upstream.outputs.commit }}'
+          path: 'include'
+
+      - name: Setup MSBuild
+        uses: microsoft/setup-msbuild@v2
+        with:
+          msbuild-architecture: x64
+
+      - name: Setup dotnet
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Build native library (win-x64)
+        run:  msbuild include/build/vs2022win10/libopenmpt.sln /m /t:libopenmpt /p:Platform=x64;Configuration=ReleaseShared
+
+      - name: Build managed library and nuget package
+        run:  dotnet pack -c Release /p:ContinuousIntegrationBuild=true;VersionPrefix=${{ needs.check-upstream.outputs.version }}.0
+
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          path: bin/LibOpenMPT.NET/Release/*nupkg

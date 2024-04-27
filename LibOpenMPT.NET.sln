@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.10.34707.107
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "LibOpenMPT.NET", "source\LibOpenMPT.NET.csproj", "{965310C0-CC52-472A-A8C4-8A1FD9A98168}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Solution Items", "Solution Items", "{25E4C98F-76B6-4578-BB43-CFACAEDBCE1E}"
+	ProjectSection(SolutionItems) = preProject
+		.github\workflows\ci.yml = .github\workflows\ci.yml
+		README.md = README.md
+	EndProjectSection
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{965310C0-CC52-472A-A8C4-8A1FD9A98168}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{965310C0-CC52-472A-A8C4-8A1FD9A98168}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{965310C0-CC52-472A-A8C4-8A1FD9A98168}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{965310C0-CC52-472A-A8C4-8A1FD9A98168}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(ExtensibilityGlobals) = postSolution
+		SolutionGuid = {08AE558A-8C64-4885-A7E8-8719563A6520}
+	EndGlobalSection
+EndGlobal

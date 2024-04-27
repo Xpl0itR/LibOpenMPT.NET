@@ -1,0 +1,48 @@
+<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <AllowUnsafeBlocks>true</AllowUnsafeBlocks>
+    <Authors>Xpl0itR</Authors>
+    <BaseOutputPath>$(SolutionDir)bin/$(MSBuildProjectName)</BaseOutputPath>
+    <Copyright>Copyright © 2024 Xpl0itR</Copyright>
+    <Description>A mostly source-generated, blittable bindings library wrapping libopenmpt using ClangSharp's PInvokeGenerator and csbindgen's GroupedNativeMethodsGenerator, targeting .NET 8.0 and .NET Standard 2.0</Description>
+    <EnableTrimAnalyzer Condition="'$(TargetFramework)' == 'net8.0'">true</EnableTrimAnalyzer>
+    <IncludeSymbols>true</IncludeSymbols>
+    <IsPackable>true</IsPackable>
+    <LangVersion>12</LangVersion>
+    <Nullable>enable</Nullable>
+    <OutputType>Library</OutputType>
+    <PackageLicenseExpression>MPL-2.0</PackageLicenseExpression>
+    <PackageRequireLicenseAcceptance>true</PackageRequireLicenseAcceptance>
+    <PublishRepositoryUrl>true</PublishRepositoryUrl>
+    <SymbolPackageFormat>snupkg</SymbolPackageFormat>
+    <TargetFrameworks>net8.0;netstandard2.0</TargetFrameworks>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="ClangSharpPInvokeGenerator" Version="17.0.1" ExcludeAssets="All" />
+    <PackageReference Include="csbindgen" Version="1.9.1" PrivateAssets="All" />
+    <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
+    <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
+  </ItemGroup>
+  
+  <ItemGroup>
+    <Content Include="$(SolutionDir)include/bin/release/vs2022-win10-shared/amd64/*.dll" Pack="true" PackagePath="runtimes/win-x64/native" />
+  </ItemGroup>
+
+  <Target Name="ClangSharpPInvokeGenerator" BeforeTargets="GenerateAdditionalSources">
+    <PropertyGroup>
+      <OutputDirectory>$(IntermediateOutputPath)/generated</OutputDirectory>
+      <FrameworkConfig Condition="'$(TargetFramework)' == 'net8.0'">latest-codegen generate-disable-runtime-marshalling</FrameworkConfig>
+      <FrameworkConfig Condition="'$(TargetFramework)' == 'netstandard2.0'">compatible-codegen</FrameworkConfig>
+      <Command>dotnet $(PkgClangSharpPInvokeGenerator)/tools/net8.0/any/ClangSharpPInvokeGenerator.dll --additional -m64 --config $(FrameworkConfig) exclude-empty-records generate-aggressive-inlining generate-callconv-member-function generate-file-scoped-namespaces generate-helper-types multi-file unix-types --file $(SolutionDir)include/libopenmpt/libopenmpt.h $(SolutionDir)include/libopenmpt/libopenmpt_ext.h --headerFile generated_file_header.txt --language c --libraryPath libopenmpt --methodClassName NativeMethods --namespace $(MSBuildProjectName) --output $(OutputDirectory) --prefixStrip openmpt_ --remap openmpt_module=Module openmpt_module_ext=ModuleExt openmpt_stream_callbacks=stream_callbacks openmpt_module_initial_ctl=module_initial_ctl openmpt_module_ext_interface_pattern_vis=module_ext_interface_pattern_vis openmpt_module_ext_interface_interactive=module_ext_interface_interactive openmpt_module_ext_interface_interactive2=module_ext_interface_interactive2 openmpt_module_ext_interface_interactive3=module_ext_interface_interactive3</Command>
+    </PropertyGroup>
+    <RemoveDir Directories="$(OutputDirectory)" />
+    <Message Importance="high" Text="$(Command)" />
+    <Exec Command="$(Command)" />
+    <ItemGroup>
+      <Compile Include="$(OutputDirectory)/*.cs" KeepDuplicates="false" />
+    </ItemGroup>
+  </Target>
+
+</Project>
