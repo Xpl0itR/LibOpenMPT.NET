@@ -70,8 +70,11 @@ jobs:
         with:
           dotnet-version: '8.0.x'
 
-      - name: Build native library (win-x64)
+      - name: Build shared native library (win-x64)
         run:  msbuild include/build/vs2022win10/libopenmpt.sln /m /t:libopenmpt /p:Platform=x64;Configuration=ReleaseShared
+
+      - name: Build static native library (win-x64)
+        run:  msbuild include/build/vs2022win10/libopenmpt.sln /m /t:libopenmpt /p:Platform=x64;Configuration=Release
 
       - name: Build managed library and nuget package
         run:  dotnet pack -c Release /p:ContinuousIntegrationBuild=true;VersionPrefix=${{ needs.check-upstream.outputs.version }}.0

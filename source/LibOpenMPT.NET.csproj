@@ -27,6 +27,9 @@
   </ItemGroup>
   
   <ItemGroup>
+    <Content Include="LibOpenMPT.NET.targets" Pack="true" PackagePath="build" />
+    <Content Include="$(SolutionDir)include/build/lib/vs2022win10/x86_64/Release/*.lib" Pack="true" PackagePath="runtimes/win-x64/static" />
+    <Content Include="$(SolutionDir)include/bin/release/vs2022-win10-static/amd64/openmpt-mpg123.lib" Pack="true" PackagePath="runtimes/win-x64/static" />
     <Content Include="$(SolutionDir)include/bin/release/vs2022-win10-shared/amd64/*.dll" Pack="true" PackagePath="runtimes/win-x64/native" />
   </ItemGroup>
 
