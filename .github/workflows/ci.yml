@@ -49,6 +49,8 @@ jobs:
     needs: check-upstream
     if: needs.check-upstream.outputs.commit != ''
     runs-on: windows-latest
+    permissions:
+      packages: write
     steps:
       - name: Git checkout
         uses: actions/checkout@v4
@@ -76,7 +78,5 @@ jobs:
       - name: Build managed library and nuget package
         run:  dotnet pack -c Release /p:ContinuousIntegrationBuild=true;VersionPrefix=${{ needs.check-upstream.outputs.version }}.0
 
-      - name: Upload artifact
-        uses: actions/upload-artifact@v4
-        with:
-          path: bin/LibOpenMPT.NET/Release/*nupkg
+      - name: Upload nuget package
+        run:  dotnet nuget push bin/LibOpenMPT.NET/Release/*nupkg -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ github.event.repository.name }}/index.json
