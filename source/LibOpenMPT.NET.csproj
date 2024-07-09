@@ -5,6 +5,7 @@
     <Authors>Xpl0itR</Authors>
     <BaseOutputPath>$(SolutionDir)bin/$(MSBuildProjectName)</BaseOutputPath>
     <Copyright>Copyright © 2024 Xpl0itR</Copyright>
+    <DebugType>Embedded</DebugType>
     <Description>A mostly source-generated, blittable bindings library wrapping libopenmpt using ClangSharp's PInvokeGenerator and csbindgen's GroupedNativeMethodsGenerator, targeting .NET 8.0 and .NET Standard 2.0</Description>
     <EnableTrimAnalyzer Condition="'$(TargetFramework)' == 'net8.0'">true</EnableTrimAnalyzer>
     <IncludeSymbols>true</IncludeSymbols>
@@ -20,8 +21,8 @@
   </PropertyGroup>
 
   <ItemGroup>
-    <PackageReference Include="ClangSharpPInvokeGenerator" Version="17.0.1" ExcludeAssets="All" />
-    <PackageReference Include="csbindgen" Version="1.9.1" PrivateAssets="All" />
+    <PackageReference Include="ClangSharpPInvokeGenerator" Version="18.1.0" ExcludeAssets="All" />
+    <PackageReference Include="csbindgen" Version="1.9.2" PrivateAssets="All" />
     <PackageReference Include="Microsoft.SourceLink.GitHub" Version="8.0.0" PrivateAssets="All" />
     <PackageReference Include="System.Runtime.CompilerServices.Unsafe" Version="6.0.0" Condition="'$(TargetFramework)' == 'netstandard2.0'" />
   </ItemGroup>
