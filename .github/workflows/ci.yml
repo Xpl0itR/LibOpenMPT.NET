@@ -76,7 +76,7 @@ jobs:
         run:  msbuild include/build/vs2022win10/libopenmpt.sln /m /t:libopenmpt /p:Platform=x64 /p:Configuration=ReleaseShared
 
       - name: Build managed library and nuget package
-        run:  dotnet pack -c Release /p:ContinuousIntegrationBuild=true /p:VersionPrefix=${{ needs.check-upstream.outputs.version }}.0
+        run:  dotnet pack -c Release /p:ContinuousIntegrationBuild=true /p:Version=${{ needs.check-upstream.outputs.version }}
 
       - name: Upload nuget package
         run:  dotnet nuget push bin/LibOpenMPT.NET/Release/LibOpenMPT.NET.${{ needs.check-upstream.outputs.version }}.nupkg -k ${{ secrets.GITHUB_TOKEN }} -s https://nuget.pkg.github.com/${{ github.event.repository.owner.login }}/index.json
